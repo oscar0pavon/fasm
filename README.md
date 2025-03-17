@@ -1,5 +1,7 @@
 # flat assembler
-x86_64 Assembler for GNU/Linux
+![screenshot](fasm.png)
+
+### x86_64 Assembler for GNU/Linux
 
 # Build
 This already include a version pre assembled in ./bin
