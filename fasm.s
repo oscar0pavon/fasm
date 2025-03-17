@@ -11,8 +11,6 @@
 segment readable executable
 
 start:
-
-
 	mov	[command_line],rsp
 	mov	rcx,[rsp]
 	lea	rbx,[rsp+8+rcx*8+8]
@@ -21,19 +19,6 @@ start:
 	jc	information
 
 	call	init_memory
-
-	
-	;mov	esi,_memory_prefix
-	;call	display_string
-
-	mov	eax,[memory_end]
-	sub	eax,[memory_start]
-	add	eax,[additional_memory_end]
-	sub	eax,[additional_memory]
-	shr	eax,10
-	;call	display_number
-	mov	esi,_memory_suffix
-	;call	display_string
 
 	mov	eax,96
 	mov	edi,buffer
@@ -56,7 +41,44 @@ start:
 	call	formatter
 
 	call	display_user_messages
+
+	call show_assembly_info
+
 	jmp	exit_program
+	;#end
+
+
+
+
+information:
+	mov	[con_handle],1
+	mov	esi,_logo
+	call	display_string
+
+	mov	esi,_usage
+	call	display_string
+	mov	al,1
+	jmp	exit_program
+
+show_assembly_info:
+	xor eax,eax
+	mov al,[show_info_value]
+	cmp eax,1
+	je print_assembly_info
+	ret
+	print_assembly_info:
+	mov	esi,_memory_prefix
+	call	display_string
+
+	mov	eax,[memory_end]
+	sub	eax,[memory_start]
+	add	eax,[additional_memory_end]
+	sub	eax,[additional_memory]
+	shr	eax,10
+	call	display_number
+	mov	esi,_memory_suffix
+	call	display_string
+
 
 	movzx	eax,[current_pass]
 	inc	eax
@@ -100,17 +122,7 @@ start:
 	mov	esi,_bytes_suffix
 	call	display_string
 	xor	al,al
-	jmp	exit_program
-
-information:
-	mov	[con_handle],1
-	mov	esi,_logo
-	call	display_string
-
-	mov	esi,_usage
-	call	display_string
-	mov	al,1
-	jmp	exit_program
+	ret
 
 get_params:
 	mov	rbx,[command_line]
@@ -160,9 +172,17 @@ get_params:
 	je	symbols_option
 	cmp	al,'S'
 	je	symbols_option
+	cmp	al,'v'
+	je  show_info_option	
+	cmp	al,'V'
+	je  show_info_option	
       bad_params:
 	stc
 	ret
+			show_info_option:
+			mov [show_info_value],1
+			jmp next_param
+
       memory_option:
 	cmp	byte [rsi],0
 	jne	get_memory_setting
@@ -321,8 +341,8 @@ _usage db 0xA
        db ' -s <file>          dump symbolic information for debugging',0xA
        db ' -v show version',0xA
        db 0
-_memory_prefix db '  (',0
-_memory_suffix db ' kilobytes memory, x64)',0xA,0
+_memory_prefix db '',0
+_memory_suffix db ' kilobytes memory, x64',0xA,0
 _passes_suffix db ' passes, ',0
 _seconds_suffix db ' seconds, ',0
 _bytes_suffix db ' bytes.',0xA,0
@@ -360,6 +380,8 @@ displayed_count dd ?
 last_displayed db ?
 character db ?
 preprocessing_done db ?
+
+show_info_value db 0
 
 buffer rb 1000h
 predefinitions rb 1000h
