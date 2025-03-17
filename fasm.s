@@ -333,13 +333,14 @@ _copyright db 'Copyright (c) 1999-2022, Tomasz Grysztar',0xA,0
 
 _logo db 'flat assembler  version ',VERSION_STRING,0
 _usage db 0xA
-       db 'usage: fasm <source> [output]',0xA
+       db 'usage: fasm [-v] <source> [output]',0xA
        db 'optional settings:',0xA
        db ' -m <limit>         set the limit in kilobytes for the available memory',0xA
        db ' -p <limit>         set the maximum allowed number of passes',0xA
        db ' -d <name>=<value>  define symbolic variable',0xA
        db ' -s <file>          dump symbolic information for debugging',0xA
-       db ' -v show version',0xA
+       db ' -v <source> show assembly information',0xA
+       db ' -v Show version',0xA
        db 0
 _memory_prefix db '',0
 _memory_suffix db ' kilobytes memory, x64',0xA,0
