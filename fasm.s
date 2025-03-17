@@ -12,9 +12,6 @@ segment readable executable
 
 start:
 
-	mov	[con_handle],1
-	mov	esi,_logo
-	call	display_string
 
 	mov	[command_line],rsp
 	mov	rcx,[rsp]
@@ -25,16 +22,18 @@ start:
 
 	call	init_memory
 
-	mov	esi,_memory_prefix
-	call	display_string
+	
+	;mov	esi,_memory_prefix
+	;call	display_string
+
 	mov	eax,[memory_end]
 	sub	eax,[memory_start]
 	add	eax,[additional_memory_end]
 	sub	eax,[additional_memory]
 	shr	eax,10
-	call	display_number
+	;call	display_number
 	mov	esi,_memory_suffix
-	call	display_string
+	;call	display_string
 
 	mov	eax,96
 	mov	edi,buffer
@@ -57,6 +56,8 @@ start:
 	call	formatter
 
 	call	display_user_messages
+	jmp	exit_program
+
 	movzx	eax,[current_pass]
 	inc	eax
 	call	display_number
@@ -102,6 +103,10 @@ start:
 	jmp	exit_program
 
 information:
+	mov	[con_handle],1
+	mov	esi,_logo
+	call	display_string
+
 	mov	esi,_usage
 	call	display_string
 	mov	al,1
@@ -314,6 +319,7 @@ _usage db 0xA
        db ' -p <limit>         set the maximum allowed number of passes',0xA
        db ' -d <name>=<value>  define symbolic variable',0xA
        db ' -s <file>          dump symbolic information for debugging',0xA
+       db ' -v show version',0xA
        db 0
 _memory_prefix db '  (',0
 _memory_suffix db ' kilobytes memory, x64)',0xA,0
